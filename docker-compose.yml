@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres-db-crudileirao
+    restart: always
+    environment:
+      POSTGRES_DB: crudileirao_db
+      POSTGRES_USER: crudileirao
+      POSTGRES_PASSWORD: crudileirao
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
