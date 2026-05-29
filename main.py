@@ -1,6 +1,1 @@
-def main():
-    print("Hello from crudileirao!")
-
-
-if __name__ == "__main__":
-    main()
+from persistence.configs.database import get_pool
