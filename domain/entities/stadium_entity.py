@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class stadium:
+class Stadium:
     id: int
     stadium_name: str
     city: str

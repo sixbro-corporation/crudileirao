@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
 @dataclass
-class title_type:
+class TitleType:
     id: int
     description: str

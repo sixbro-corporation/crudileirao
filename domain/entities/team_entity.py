@@ -6,6 +6,6 @@ class Team:
     id: int
     team_name: str
     state: str
-    fundacao: date
-    tecnico_id: int
-    estadio_id: int
+    creation: date
+    manager_id: int
+    stadium_id: int
