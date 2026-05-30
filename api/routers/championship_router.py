@@ -35,7 +35,7 @@ async def get_championship(championship_id: int, usecase: ChampionshipUseCase = 
         championship = await usecase.get_championship(championship_id)
         return championship
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.patch("/{championship_id}", response_model=ChampionshipSchema)

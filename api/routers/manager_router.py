@@ -35,7 +35,7 @@ async def get_manager(manager_id: int, usecase: ManagerUseCase = Depends(get_use
         manager = await usecase.get_manager(manager_id)
         return manager
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.patch("/{manager_id}", response_model=ManagerSchema)

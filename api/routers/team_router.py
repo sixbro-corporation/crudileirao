@@ -35,7 +35,7 @@ async def get_team(team_id: int, usecase: TeamUseCase = Depends(get_use_case)):
         team = await usecase.get_team(team_id)
         return team
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.patch("/{team_id}", response_model=TeamSchema)

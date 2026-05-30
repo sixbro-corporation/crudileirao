@@ -35,7 +35,7 @@ async def get_achievement(achievement_id: int, usecase: AchievementUseCase = Dep
         achievement = await usecase.get_achievement(achievement_id)
         return achievement
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.patch("/{achievement_id}", response_model=AchievementSchema)
