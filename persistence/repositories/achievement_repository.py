@@ -16,8 +16,8 @@ class AchievementRepository(AchievementRepositoryPort):
 
     async def create(self, achievement: Achievement) -> Achievement:
         row = await (self.conn.fetchrow
-                     ("INSERT INTO conquistas(id, time_id, campeonato_id) VALUES ($1, $2, $3) RETURNING *",
-                      achievement.id, achievement.team_id, achievement.championship_id))
+                     ("INSERT INTO conquistas(time_id, campeonato_id) VALUES ($1, $2) RETURNING *",
+                        achievement.team_id, achievement.championship_id))
         return Achievement(**dict(row)) if row else None
 
     async def update(self, achievement: Achievement, achievement_id: int) -> Achievement:

@@ -16,8 +16,8 @@ class TeamRepository(TeamRepositoryPort):
 
     async def create(self, team: Team) -> Team:
         row = await (self.conn.fetchrow
-                     ("INSERT INTO team (id, nome_time, estado, fundacao, tecnico_id, estadio_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-                      team.id, team.team_name, team.state, team.creation, team.manager_id, team.manager_id))
+                     ("INSERT INTO team (nome_time, estado, fundacao, tecnico_id, estadio_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                      team.team_name, team.state, team.creation, team.manager_id, team.manager_id))
         return Team(**dict(row)) if row else None
 
     async def update(self, team_id: int, team: Team) -> Team:

@@ -18,8 +18,8 @@ class ManagerRepository(ManagerRepositoryPort):
 
     async def create(self, manager: Manager) -> Manager:
         row = await self.conn.fetchrow(
-            "INSERT INTO tecnicos (id, nome_tecnico, data_nascimento, nacionalidade) VALUES ($1, $2, $3, $4) RETURNING *",
-            manager.id, manager.manager_name, manager.birth_date, manager.nacionality
+            "INSERT INTO tecnicos (nome_tecnico, data_nascimento, nacionalidade) VALUES ($1, $2, $3) RETURNING *",
+            manager.manager_name, manager.birth_date, manager.nacionality
         )
         return Manager(**dict(row))
 

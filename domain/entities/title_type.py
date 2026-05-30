@@ -2,5 +2,5 @@ from dataclasses import dataclass
 
 @dataclass
 class TitleType:
-    id: int
     description: str
+    id: int | None = None
