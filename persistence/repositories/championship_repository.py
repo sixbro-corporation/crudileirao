@@ -31,4 +31,7 @@ class ChampionshipRepository(ChampionshipRepositoryPort):
         DELETE FROM conquistas WHERE id = $1""", championship_id)
         return result == "DELETE 1"
 
-
+    async def exists_by_name(self, championship_name: str) -> bool:
+        row = self.conn.fetchrow("""
+        select * from campeonatos where nome_campeonato = $1""", championship_name)
+        return row is not None

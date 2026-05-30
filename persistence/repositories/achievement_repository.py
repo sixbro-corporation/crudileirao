@@ -31,4 +31,8 @@ class AchievementRepository(AchievementRepositoryPort):
         DELETE FROM conquistas WHERE id = $1""", achievement_id)
         return result == "DELETE 1"
 
+    async def exists_by_team_and_championship(self, team_id: int, championship_id: int) -> bool:
+        row = await self.conn.fetchrow("""
+        SELECT 1 FROM conquistas WHERE team_id = $1 AND championship_id = $2""", team_id, championship_id)
+        return row is not None
 

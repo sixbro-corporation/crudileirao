@@ -18,3 +18,7 @@ class ManagerRepositoryPort(ABC):
 
     @abstractmethod
     async def delete(self, manager_id: int) -> bool: ...
+
+    @abstractmethod
+    async def exists_by_name(self, team_name: str) -> bool:
+        pass
