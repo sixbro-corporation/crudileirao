@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict OzVModUDWdmwKLqDHPXpT1ujf9hI2vkCTWnEMu6AWDBOUasEdmyYaTBLRyVV1xo
+\restrict carzV4pDawDai68UE0IeorK4mnlXbIEtBLQs2b2nAfjb6gGWdTki4SNMJnmomoj
 
 -- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
@@ -17,6 +17,22 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO pg_database_owner;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
 
 SET default_tablespace = '';
 
@@ -64,8 +80,7 @@ ALTER SEQUENCE public.campeonatos_id_seq OWNED BY public.campeonatos.id;
 CREATE TABLE public.conquistas (
     id integer NOT NULL,
     time_id integer NOT NULL,
-    campeonato_id integer NOT NULL,
-    ano_conquista integer NOT NULL
+    edicao_id integer NOT NULL
 );
 
 
@@ -91,6 +106,41 @@ ALTER SEQUENCE public.conquistas_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.conquistas_id_seq OWNED BY public.conquistas.id;
+
+
+--
+-- Name: edicoes_campeonato; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.edicoes_campeonato (
+    id integer NOT NULL,
+    campeonato_id integer NOT NULL,
+    ano integer NOT NULL
+);
+
+
+ALTER TABLE public.edicoes_campeonato OWNER TO postgres;
+
+--
+-- Name: edicoes_campeonato_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.edicoes_campeonato_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.edicoes_campeonato_id_seq OWNER TO postgres;
+
+--
+-- Name: edicoes_campeonato_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.edicoes_campeonato_id_seq OWNED BY public.edicoes_campeonato.id;
 
 
 --
@@ -136,7 +186,7 @@ ALTER SEQUENCE public.estadios_id_seq OWNED BY public.estadios.id;
 CREATE TABLE public.jogadores (
     id integer NOT NULL,
     nome_jogador character varying(100) NOT NULL,
-    idade integer NOT NULL,
+    data_nascimento date NOT NULL,
     posicao character varying(50) NOT NULL,
     numero_camisa integer NOT NULL,
     time_id integer NOT NULL
@@ -174,7 +224,7 @@ ALTER SEQUENCE public.jogadores_id_seq OWNED BY public.jogadores.id;
 CREATE TABLE public.tecnicos (
     id integer NOT NULL,
     nome_tecnico character varying(100) NOT NULL,
-    idade integer NOT NULL,
+    data_nascimento date NOT NULL,
     nacionalidade character varying(50) NOT NULL
 );
 
@@ -290,6 +340,13 @@ ALTER TABLE ONLY public.conquistas ALTER COLUMN id SET DEFAULT nextval('public.c
 
 
 --
+-- Name: edicoes_campeonato id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edicoes_campeonato ALTER COLUMN id SET DEFAULT nextval('public.edicoes_campeonato_id_seq'::regclass);
+
+
+--
 -- Name: estadios id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -341,7 +398,34 @@ COPY public.campeonatos (id, nome_campeonato, tipo_titulo_id) FROM stdin;
 -- Data for Name: conquistas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.conquistas (id, time_id, campeonato_id, ano_conquista) FROM stdin;
+COPY public.conquistas (id, time_id, edicao_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: edicoes_campeonato; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.edicoes_campeonato (id, campeonato_id, ano) FROM stdin;
+1	1	2023
+2	1	2024
+3	1	2025
+4	1	2026
+5	2	2023
+6	2	2024
+7	2	2025
+8	2	2026
+9	3	2023
+10	3	2024
+11	3	2025
+12	3	2026
+13	4	2021
+14	4	2022
+15	4	2023
+16	4	2024
+17	4	2025
+18	5	2023
+19	5	2025
 \.
 
 
@@ -351,25 +435,24 @@ COPY public.conquistas (id, time_id, campeonato_id, ano_conquista) FROM stdin;
 
 COPY public.estadios (id, nome_estadio, cidade, capacidade) FROM stdin;
 1	Allianz Parque	São Paulo	43713
-2	Mineirão	Belo Horizonte	61927
-3	Morumbis	São Paulo	66795
-4	Neo Química Arena	São Paulo	49205
+2	Maracanã	Rio de Janeiro	78838
+3	Ligga Arena	Curitiba	42372
+4	Estádio Nabi Abi Chedid	Bragança Paulista	17024
 5	Arena Fonte Nova	Salvador	47907
-6	Castelão	Fortaleza	63903
-7	Arena MRV	Belo Horizonte	44000
-8	Arena do Grêmio	Porto Alegre	55662
-9	Beira-Rio	Porto Alegre	50128
-10	Maracanã	Rio de Janeiro	78838
-11	São Januário	Rio de Janeiro	21880
-12	Nilton Santos	Rio de Janeiro	44661
-13	Ligga Arena	Curitiba	42372
-14	Arena da Baixada	Curitiba	42372
-15	Estádio da Serrinha	Goiânia	14525
-16	Brinco de Ouro	Campinas	29130
-17	Arena Pantanal	Cuiabá	44097
-18	Rei Pelé	Maceió	17000
-19	Barradão	Salvador	30000
-20	Arena Pernambuco	Recife	46154
+6	Estádio Couto Pereira	Curitiba	40502
+7	Estádio MorumBIS	São Paulo	66795
+8	Neo Química Arena	São Paulo	49205
+9	Mineirão	Belo Horizonte	61927
+10	Estádio Nilton Santos	Rio de Janeiro	44661
+11	Estádio Manoel Barradas (Barradão)	Salvador	30618
+12	Arena MRV	Belo Horizonte	44000
+13	Estádio Beira-Rio	Porto Alegre	50128
+14	Vila Belmiro	Santos	16068
+15	Arena do Grêmio	Porto Alegre	55662
+16	São Januário	Rio de Janeiro	21880
+17	Estádio José Maria de Campos Maia (Maião)	Mirassol	14534
+18	Mangueirão	Belém	53586
+19	Arena Condá	Chapecó	22600
 \.
 
 
@@ -377,7 +460,7 @@ COPY public.estadios (id, nome_estadio, cidade, capacidade) FROM stdin;
 -- Data for Name: jogadores; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.jogadores (id, nome_jogador, idade, posicao, numero_camisa, time_id) FROM stdin;
+COPY public.jogadores (id, nome_jogador, data_nascimento, posicao, numero_camisa, time_id) FROM stdin;
 \.
 
 
@@ -385,27 +468,27 @@ COPY public.jogadores (id, nome_jogador, idade, posicao, numero_camisa, time_id)
 -- Data for Name: tecnicos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tecnicos (id, nome_tecnico, idade, nacionalidade) FROM stdin;
-1	Abel Ferreira	47	Portuguesa
-2	Leonardo Jardim	51	Portuguesa
-3	Luis Zubeldía	44	Argentina
-4	Dorival Júnior	63	Brasileira
-5	Odair Hellmann	48	Brasileira
-6	Vagner Mancini	59	Brasileira
-7	Rogério Ceni	52	Brasileira
-8	Fernando Seabra	48	Brasileira
-9	Franclim Carvalho	47	Brasileira
-10	Eduardo Domínguez	47	Argentina
-11	Paulo Pezzolano	42	Uruguaia
-12	Renato Gaúcho	63	Brasileira
-13	Arthur Jorge	54	Portuguesa
-14	Jair Ventura	46	Brasileira
-15	Luís Castro	64	Portuguesa
-16	Cuca	63	Brasileira
-17	Fernando Diniz	52	Brasileira
-18	Léo Condé	47	Brasileira
-19	Rafael Guanaes	44	Brasileira
-20	Fábio Matias	45	Brasileira
+COPY public.tecnicos (id, nome_tecnico, data_nascimento, nacionalidade) FROM stdin;
+1	Abel Ferreira	1978-12-22	Portuguesa
+2	Leonardo Jardim	1974-08-01	Portuguesa
+3	Odair Hellmann	1977-01-22	Brasileira
+4	Luis Zubeldía	1981-01-13	Argentina
+5	Vagner Mancini	1966-10-24	Brasileira
+6	Rogério Ceni	1973-01-22	Brasileira
+7	Fernando Seabra	1977-06-15	Brasileira
+8	Dorival Júnior	1962-04-25	Brasileira
+9	Fernando Diniz	1974-03-27	Brasileira
+10	Artur Jorge	1972-01-13	Portuguesa
+11	Franclim Carvalho	1987-03-15	Brasileira
+12	Jair Ventura	1979-03-14	Brasileira
+13	Eduardo Domínguez	1978-09-01	Argentina
+14	Paulo Pezzolano	1983-04-25	Uruguaia
+15	Cuca	1963-06-07	Brasileira
+16	Luís Castro	1961-09-03	Portuguesa
+17	Renato Gaúcho	1962-09-09	Brasileira
+18	Rafael Guanaes	1981-03-27	Brasileira
+19	Léo Condé	1978-04-21	Brasileira
+20	Fábio Matias	1979-07-02	Brasileira
 \.
 
 
@@ -415,25 +498,25 @@ COPY public.tecnicos (id, nome_tecnico, idade, nacionalidade) FROM stdin;
 
 COPY public.times (id, nome_time, estado, fundacao, tecnico_id, estadio_id) FROM stdin;
 1	Palmeiras	São Paulo	1914	1	1
-2	Cruzeiro	Minas Gerais	1921	2	2
-3	São Paulo	São Paulo	1930	3	3
-4	Corinthians	São Paulo	1910	4	4
-5	Bahia	Bahia	1931	5	5
-6	Fortaleza	Ceará	1918	6	6
-7	Atlético Mineiro	Minas Gerais	1908	7	7
-8	Grêmio	Rio Grande do Sul	1903	8	8
-9	Internacional	Rio Grande do Sul	1909	9	9
-10	Flamengo	Rio de Janeiro	1895	10	10
-11	Vasco da Gama	Rio de Janeiro	1898	11	11
-12	Botafogo	Rio de Janeiro	1904	12	12
-13	Athletico Paranaense	Paraná	1924	13	13
-14	Coritiba	Paraná	1909	14	14
-15	Goiás	Goiás	1943	15	15
-16	Guarani	São Paulo	1911	16	16
-17	Cuiabá	Mato Grosso	2001	17	17
-18	CRB	Alagoas	1912	18	18
-19	Vitória	Bahia	1899	19	19
-20	Sport	Pernambuco	1905	20	20
+2	Flamengo	Rio de Janeiro	1895	2	2
+3	Athletico Paranaense	Paraná	1924	3	3
+4	Fluminense	Rio de Janeiro	1902	4	2
+5	Red Bull Bragantino	São Paulo	1928	5	4
+6	Bahia	Bahia	1931	6	5
+7	Coritiba	Paraná	1909	7	6
+8	São Paulo	São Paulo	1930	8	7
+9	Corinthians	São Paulo	1910	9	8
+10	Cruzeiro	Minas Gerais	1921	10	9
+11	Botafogo	Rio de Janeiro	1904	11	10
+12	Vitória	Bahia	1899	12	11
+13	Atlético Mineiro	Minas Gerais	1908	13	12
+14	Internacional	Rio Grande do Sul	1909	14	13
+15	Santos	São Paulo	1912	15	14
+16	Grêmio	Rio Grande do Sul	1903	16	15
+17	Vasco da Gama	Rio de Janeiro	1898	17	16
+18	Mirassol	São Paulo	1925	18	17
+19	Remo	Pará	1905	19	18
+20	Chapecoense	Santa Catarina	1973	20	19
 \.
 
 
@@ -464,10 +547,17 @@ SELECT pg_catalog.setval('public.conquistas_id_seq', 1, false);
 
 
 --
+-- Name: edicoes_campeonato_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.edicoes_campeonato_id_seq', 19, true);
+
+
+--
 -- Name: estadios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.estadios_id_seq', 20, true);
+SELECT pg_catalog.setval('public.estadios_id_seq', 19, true);
 
 
 --
@@ -515,6 +605,30 @@ ALTER TABLE ONLY public.conquistas
 
 
 --
+-- Name: conquistas conquistas_time_id_edicao_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conquistas
+    ADD CONSTRAINT conquistas_time_id_edicao_id_key UNIQUE (time_id, edicao_id);
+
+
+--
+-- Name: edicoes_campeonato edicoes_campeonato_campeonato_id_ano_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edicoes_campeonato
+    ADD CONSTRAINT edicoes_campeonato_campeonato_id_ano_key UNIQUE (campeonato_id, ano);
+
+
+--
+-- Name: edicoes_campeonato edicoes_campeonato_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edicoes_campeonato
+    ADD CONSTRAINT edicoes_campeonato_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: estadios estadios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -528,6 +642,14 @@ ALTER TABLE ONLY public.estadios
 
 ALTER TABLE ONLY public.jogadores
     ADD CONSTRAINT jogadores_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jogadores jogadores_time_id_numero_camisa_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.jogadores
+    ADD CONSTRAINT jogadores_time_id_numero_camisa_key UNIQUE (time_id, numero_camisa);
 
 
 --
@@ -547,6 +669,14 @@ ALTER TABLE ONLY public.times
 
 
 --
+-- Name: times times_tecnico_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.times
+    ADD CONSTRAINT times_tecnico_id_key UNIQUE (tecnico_id);
+
+
+--
 -- Name: tipo_titulo tipo_titulo_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -560,6 +690,30 @@ ALTER TABLE ONLY public.tipo_titulo
 
 ALTER TABLE ONLY public.campeonatos
     ADD CONSTRAINT campeonatos_tipo_titulo_id_fkey FOREIGN KEY (tipo_titulo_id) REFERENCES public.tipo_titulo(id);
+
+
+--
+-- Name: conquistas conquistas_edicao_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conquistas
+    ADD CONSTRAINT conquistas_edicao_id_fkey FOREIGN KEY (edicao_id) REFERENCES public.edicoes_campeonato(id);
+
+
+--
+-- Name: conquistas conquistas_time_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conquistas
+    ADD CONSTRAINT conquistas_time_id_fkey FOREIGN KEY (time_id) REFERENCES public.times(id);
+
+
+--
+-- Name: edicoes_campeonato edicoes_campeonato_campeonato_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edicoes_campeonato
+    ADD CONSTRAINT edicoes_campeonato_campeonato_id_fkey FOREIGN KEY (campeonato_id) REFERENCES public.campeonatos(id);
 
 
 --
@@ -590,5 +744,5 @@ ALTER TABLE ONLY public.times
 -- PostgreSQL database dump complete
 --
 
-\unrestrict OzVModUDWdmwKLqDHPXpT1ujf9hI2vkCTWnEMu6AWDBOUasEdmyYaTBLRyVV1xo
+\unrestrict carzV4pDawDai68UE0IeorK4mnlXbIEtBLQs2b2nAfjb6gGWdTki4SNMJnmomoj
 
