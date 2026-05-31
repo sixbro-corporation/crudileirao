@@ -4,4 +4,4 @@ from dataclasses import dataclass
 class Achievement:
     id: int
     team_id: int
-    championship_id: int
+    edition_id: int

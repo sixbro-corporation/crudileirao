@@ -7,28 +7,27 @@ class ChampionshipRepository(ChampionshipRepositoryPort):
         self.conn = conn
 
     async def get_all(self) -> list[Championship]:
-        rows = await self.conn.fetch("SELECT * FROM ")
+        rows = await self.conn.fetch("SELECT * FROM campeonatos")
         return [Championship(**dict(row)) for row in rows]
 
-    async def get_by_id(self, championship_id: int) -> Championship:
-        row = await self.conn.fetchrow("SELECT * FROM conquistas WHERE id = $1", championship_id)
+    async def get_by_id(self, championship_id: int) -> Championship | None:
+        row = await self.conn.fetchrow("SELECT * FROM campeonatos WHERE id = $1", championship_id)
         return Championship(**dict(row)) if row else None
 
     async def create(self, championship: Championship) -> Championship:
-        row = await (self.conn.fetchrow
-                     ("INSERT INTO conquistas(id, nome_campeonato, tipo_titulo_id, ano) VALUES ($1, $2, $3, $4) RETURNING *",
-                      championship.id, championship.championship_name, championship.title_type_id, championship.year))
-        return Championship(**dict(row)) if row else None
+        row = await self.conn.fetchrow(
+            "INSERT INTO campeonatos (nome_campeonato, tipo_titulo_id) VALUES ($1, $2) RETURNING *",
+            championship.championship_name, championship.title_type_id
+        )
+        return Championship(**dict(row))
 
-    async def update(self, championship: Championship, championship_id: int) -> Championship:
-        row = await self.conn.fetchrow("""UPDATE conquistas SET nome_campeonato = $1, tipo_titulo_id = $2, ano = $3 WHERE id = $4 RETURNING *""",
-            championship.championship_name, championship.title_type_id, championship.year)
-
+    async def update(self, championship_id: int, championship: Championship) -> Championship | None:
+        row = await self.conn.fetchrow(
+            "UPDATE campeonatos SET nome_campeonato = $1, tipo_titulo_id = $2 WHERE id = $3 RETURNING *",
+            championship.championship_name, championship.title_type_id, championship_id
+        )
         return Championship(**dict(row)) if row else None
 
     async def delete(self, championship_id: int) -> bool:
-        result = await self.conn.execute("""
-        DELETE FROM conquistas WHERE id = $1""", championship_id)
+        result = await self.conn.execute("DELETE FROM campeonatos WHERE id = $1", championship_id)
         return result == "DELETE 1"
-
-
