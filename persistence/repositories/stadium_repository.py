@@ -18,8 +18,8 @@ class StadiumRepository(StadiumRepositoryPort):
 
     async def create(self, stadium: Stadium) -> Stadium:
         row = await self.conn.fetchrow(
-            "INSERT INTO estadios (id, nome_estadio, cidade, capacidade) VALUES ($1, $2, $3, $4) RETURNING *",
-            stadium.id, stadium.stadium_name, stadium.city, stadium.capacity
+            "INSERT INTO estadios (nome_estadio, cidade, capacidade) VALUES ($1, $2, $3) RETURNING *",
+            stadium.stadium_name, stadium.city, stadium.capacity
         )
         return Stadium(**dict(row))
 

@@ -21,3 +21,7 @@ class ChampionshipRepositoryPort(ABC):
     @abstractmethod
     async def delete(self, id: int) -> Championship:
         pass
+
+    @abstractmethod
+    async def exists_by_name(self, team_name: str) -> bool:
+        pass

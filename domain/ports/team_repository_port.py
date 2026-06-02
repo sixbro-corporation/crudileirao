@@ -23,3 +23,7 @@ class TeamRepositoryPort(ABC):
     @abstractmethod
     async def delete(self, team_id: int) -> Team:
         pass
+
+    @abstractmethod
+    async def exists_by_name(self, team_name: str) -> bool:
+        pass
