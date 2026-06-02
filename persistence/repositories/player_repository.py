@@ -18,8 +18,8 @@ class PlayerRepository(PlayerRepositoryPort):
 
     async def create(self, player: Player) -> Player:
         row = await self.conn.fetchrow(
-            "INSERT INTO jogadores (id, nome_jogador, data_nascimento, posicao, numero_camisa, time_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-            player.id, player.player_name, player.birth_date, player.posicao, player.shirt_number, player.team_id
+            "INSERT INTO jogadores (nome_jogador, data_nascimento, posicao, numero_camisa, time_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            player.player_name, player.birth_date, player.posicao, player.shirt_number, player.team_id
         )
         return Player(**dict(row))
 

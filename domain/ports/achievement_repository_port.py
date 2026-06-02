@@ -23,3 +23,7 @@ class AchievementRepositoryPort(ABC):
     @abstractmethod
     async def delete(self, id: int) -> Achievement:
         pass
+
+    @abstractmethod
+    async def exists_by_team_and_championship(self, team_id: int, championship_id: int) -> bool:
+        pass

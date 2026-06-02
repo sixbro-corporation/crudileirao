@@ -16,8 +16,8 @@ class AchievementRepository(AchievementRepositoryPort):
 
     async def create(self, achievement: Achievement) -> Achievement:
         row = await (self.conn.fetchrow
-                     ("INSERT INTO conquistas(id, time_id, campeonato_id) VALUES ($1, $2, $3) RETURNING *",
-                      achievement.id, achievement.team_id, achievement.championship_id))
+                     ("INSERT INTO conquistas(time_id, campeonato_id) VALUES ($1, $2) RETURNING *",
+                        achievement.team_id, achievement.championship_id))
         return Achievement(**dict(row)) if row else None
 
     async def update(self, achievement: Achievement, achievement_id: int) -> Achievement:
@@ -31,4 +31,8 @@ class AchievementRepository(AchievementRepositoryPort):
         DELETE FROM conquistas WHERE id = $1""", achievement_id)
         return result == "DELETE 1"
 
+    async def exists_by_team_and_championship(self, team_id: int, championship_id: int) -> bool:
+        row = await self.conn.fetchrow("""
+        SELECT 1 FROM conquistas WHERE team_id = $1 AND championship_id = $2""", team_id, championship_id)
+        return row is not None
 

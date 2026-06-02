@@ -18,8 +18,8 @@ class TitleTypeRepository(TitleTypeRepositoryPort):
 
     async def create(self, title_type: TitleType) -> TitleType:
         row = await self.conn.fetchrow(
-            "INSERT INTO tipos_titulo (id, descricao) VALUES ($1) RETURNING *",
-            title_type.id, title_type.description
+            "INSERT INTO tipos_titulo (descricao) VALUES ($1) RETURNING *",
+            title_type.description
         )
         return TitleType(**dict(row))
 

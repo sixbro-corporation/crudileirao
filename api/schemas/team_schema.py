@@ -1,11 +1,11 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 from datetime import date
 
-@dataclass
-class Team:
+class TeamSchema(BaseModel):
     team_name: str
     state: str
     creation: date
     manager_id: int
     stadium_id: int
-    id: int | None = None
+
+    model_config = {"from_attributes": True}

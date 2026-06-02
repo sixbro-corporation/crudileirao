@@ -18,8 +18,8 @@ class ManagerRepository(ManagerRepositoryPort):
 
     async def create(self, manager: Manager) -> Manager:
         row = await self.conn.fetchrow(
-            "INSERT INTO tecnicos (id, nome_tecnico, data_nascimento, nacionalidade) VALUES ($1, $2, $3, $4) RETURNING *",
-            manager.id, manager.manager_name, manager.birth_date, manager.nacionality
+            "INSERT INTO tecnicos (nome_tecnico, data_nascimento, nacionalidade) VALUES ($1, $2, $3) RETURNING *",
+            manager.manager_name, manager.birth_date, manager.nacionality
         )
         return Manager(**dict(row))
 
@@ -33,3 +33,8 @@ class ManagerRepository(ManagerRepositoryPort):
     async def delete(self, manager_id: int) -> bool:
         result = await self.conn.execute("DELETE FROM tecnicos WHERE id = $1", manager_id)
         return result == "DELETE 1"
+
+    async def exists_by_name(self, manager_name: str) -> bool:
+        row = await self.conn.fetchrow(""""
+        SELECT 1 FROM tecnicos WHERE nome_tecnico = $1""", manager_name)
+        return row is not None

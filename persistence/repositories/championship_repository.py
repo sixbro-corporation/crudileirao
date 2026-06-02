@@ -16,8 +16,8 @@ class ChampionshipRepository(ChampionshipRepositoryPort):
 
     async def create(self, championship: Championship) -> Championship:
         row = await (self.conn.fetchrow
-                     ("INSERT INTO conquistas(id, nome_campeonato, tipo_titulo_id, ano) VALUES ($1, $2, $3, $4) RETURNING *",
-                      championship.id, championship.championship_name, championship.title_type_id, championship.year))
+                     ("INSERT INTO conquistas(nome_campeonato, tipo_titulo_id, ano) VALUES ($1, $2, $3) RETURNING *",
+                      championship.championship_name, championship.title_type_id, championship.year))
         return Championship(**dict(row)) if row else None
 
     async def update(self, championship: Championship, championship_id: int) -> Championship:
@@ -31,4 +31,7 @@ class ChampionshipRepository(ChampionshipRepositoryPort):
         DELETE FROM conquistas WHERE id = $1""", championship_id)
         return result == "DELETE 1"
 
-
+    async def exists_by_name(self, championship_name: str) -> bool:
+        row = self.conn.fetchrow("""
+        select * from campeonatos where nome_campeonato = $1""", championship_name)
+        return row is not None

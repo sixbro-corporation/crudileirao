@@ -3,7 +3,7 @@ from datetime import date
 
 @dataclass
 class Manager:
-    id: int
     manager_name: str
     birth_date: date
     nacionality: str
+    id: int | None = None
