@@ -18,3 +18,6 @@ class PlayerRepositoryPort(ABC):
 
     @abstractmethod
     async def delete(self, player_id: int) -> bool: ...
+
+    @abstractmethod
+    async def exists_by_shirt_number_and_team(self, shirt_number: int, team_id: int) -> bool: ...

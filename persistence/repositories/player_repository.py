@@ -33,3 +33,10 @@ class PlayerRepository(PlayerRepositoryPort):
     async def delete(self, player_id: int) -> bool:
         result = await self.conn.execute("DELETE FROM jogadores WHERE id = $1", player_id)
         return result == "DELETE 1"
+
+    async def exists_by_shirt_number_and_team(self, shirt_number: int, team_id: int) -> bool:
+        row = await self.conn.fetchrow(
+            "SELECT 1 FROM jogadores WHERE numero_camisa = $1 AND time_id = $2",
+            shirt_number, team_id
+        )
+        return row is not None

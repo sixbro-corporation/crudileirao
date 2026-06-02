@@ -22,3 +22,6 @@ class ChampionshipEditionRepositoryPort(ABC):
 
     @abstractmethod
     async def delete(self, edition_id: int) -> bool: ...
+
+    @abstractmethod
+    async def exists_by_championship_and_year(self, championship_id: int, year: int) -> bool: ...

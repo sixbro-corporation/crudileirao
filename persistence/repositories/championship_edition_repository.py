@@ -40,3 +40,10 @@ class ChampionshipEditionRepository(ChampionshipEditionRepositoryPort):
     async def delete(self, edition_id: int) -> bool:
         result = await self.conn.execute("DELETE FROM edicoes_campeonato WHERE id = $1", edition_id)
         return result == "DELETE 1"
+
+    async def exists_by_championship_and_year(self, championship_id: int, year: int) -> bool:
+        row = await self.conn.fetchrow(
+            "SELECT 1 FROM edicoes_campeonato WHERE campeonato_id = $1 AND ano = $2",
+            championship_id, year
+        )
+        return row is not None
