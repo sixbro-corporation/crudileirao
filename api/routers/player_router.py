@@ -7,12 +7,16 @@ from business.dtos.player_dto import CreatePlayerDTO, UpdatePlayerDTO
 from business.player_use_case import PlayerUseCase
 from persistence.configs.database import get_db_connection
 from persistence.repositories.player_repository import PlayerRepository
+from persistence.repositories.team_repository import TeamRepository
 
 router = APIRouter(prefix="/player", tags=["Player"])
 
 
 def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> PlayerUseCase:
-    return PlayerUseCase(PlayerRepository(conn))
+    return PlayerUseCase(
+        repository=PlayerRepository(conn),
+        team_repository=TeamRepository(conn),
+    )
 
 
 @router.get("/", response_model=ApiResponse[list[PlayerSchema]])

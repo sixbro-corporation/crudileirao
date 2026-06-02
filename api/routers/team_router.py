@@ -6,13 +6,19 @@ from api.schemas.team_schema import TeamSchema
 from business.dtos.team_dto import CreateTeamDTO, UpdateTeamDTO
 from business.team_use_case import TeamUseCase
 from persistence.configs.database import get_db_connection
+from persistence.repositories.manager_repository import ManagerRepository
+from persistence.repositories.stadium_repository import StadiumRepository
 from persistence.repositories.team_repository import TeamRepository
 
 router = APIRouter(prefix="/team", tags=["Team"])
 
 
 def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> TeamUseCase:
-    return TeamUseCase(TeamRepository(conn))
+    return TeamUseCase(
+        team_repository=TeamRepository(conn),
+        manager_repository=ManagerRepository(conn),
+        stadium_repository=StadiumRepository(conn),
+    )
 
 
 @router.get("/", response_model=ApiResponse[list[TeamSchema]])

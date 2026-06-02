@@ -1,4 +1,5 @@
 from domain.entities.stadium_entity import Stadium
+from domain.exceptions.business_exception import BusinessException
 from domain.ports.stadium_repository_port import StadiumRepositoryPort
 from .dtos.stadium_dto import CreateStadiumDTO, UpdateStadiumDTO
 
@@ -13,7 +14,7 @@ class StadiumUseCase:
     async def get_stadium(self, stadium_id: int) -> Stadium:
         existing = await self.repository.get_by_id(stadium_id)
         if not existing:
-            raise ValueError("Estádio não encontrado")
+            raise BusinessException("Estádio não encontrado")
         return existing
 
     async def create_stadium(self, dto: CreateStadiumDTO) -> Stadium:
@@ -27,7 +28,7 @@ class StadiumUseCase:
     async def update_stadium(self, stadium_id: int, dto: UpdateStadiumDTO) -> Stadium:
         existing = await self.repository.get_by_id(stadium_id)
         if not existing:
-            raise ValueError("Estádio não encontrado")
+            raise BusinessException("Estádio não encontrado")
 
         stadium = Stadium(
             stadium_name=dto.stadium_name if dto.stadium_name is not None else existing.stadium_name,
@@ -38,7 +39,6 @@ class StadiumUseCase:
         return await self.repository.update(stadium_id, stadium)
 
     async def delete_stadium(self, stadium_id: int) -> None:
-        existing = await self.repository.get_by_id(stadium_id)
-        if not existing:
-            raise ValueError("Estádio não encontrado")
+        if not await self.repository.get_by_id(stadium_id):
+            raise BusinessException("Estádio não encontrado")
         await self.repository.delete(stadium_id)

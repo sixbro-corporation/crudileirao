@@ -7,12 +7,18 @@ from business.achievement_use_case import AchievementUseCase
 from business.dtos.achievement_dto import CreateAchievementDTO, UpdateAchievementDTO
 from persistence.configs.database import get_db_connection
 from persistence.repositories.achievement_repository import AchievementRepository
+from persistence.repositories.championship_edition_repository import ChampionshipEditionRepository
+from persistence.repositories.team_repository import TeamRepository
 
 router = APIRouter(prefix="/achievement", tags=["Achievement"])
 
 
 def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> AchievementUseCase:
-    return AchievementUseCase(AchievementRepository(conn))
+    return AchievementUseCase(
+        repository=AchievementRepository(conn),
+        team_repository=TeamRepository(conn),
+        edition_repository=ChampionshipEditionRepository(conn),
+    )
 
 
 @router.get("/", response_model=ApiResponse[list[AchievementSchema]])

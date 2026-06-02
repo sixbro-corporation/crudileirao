@@ -7,12 +7,16 @@ from business.championship_use_case import ChampionshipUseCase
 from business.dtos.championship_dto import ChampionshipCreateDTO, ChampionshipUpdateDTO
 from persistence.configs.database import get_db_connection
 from persistence.repositories.championship_repository import ChampionshipRepository
+from persistence.repositories.title_type_repository import TitleTypeRepository
 
 router = APIRouter(prefix="/championship", tags=["Championship"])
 
 
 def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> ChampionshipUseCase:
-    return ChampionshipUseCase(ChampionshipRepository(conn))
+    return ChampionshipUseCase(
+        repository=ChampionshipRepository(conn),
+        title_type_repository=TitleTypeRepository(conn),
+    )
 
 
 @router.get("/", response_model=ApiResponse[list[ChampionshipSchema]])

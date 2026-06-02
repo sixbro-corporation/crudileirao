@@ -1,4 +1,5 @@
 from domain.entities.tecnicos_entity import Manager
+from domain.exceptions.business_exception import BusinessException
 from domain.ports.manager_repository_port import ManagerRepositoryPort
 from .dtos.manager_dto import ManagerInputDTO, ManagerUpdateDTO
 
@@ -8,15 +9,17 @@ class ManagerUseCase:
         self.repository = repository
 
     async def get_manager(self, manager_id: int) -> Manager:
-        return await self.repository.get_by_id(manager_id)
+        existing = await self.repository.get_by_id(manager_id)
+        if not existing:
+            raise BusinessException("Técnico não encontrado")
+        return existing
 
     async def get_all_managers(self) -> list[Manager]:
         return await self.repository.get_all()
 
     async def create_manager(self, manager: ManagerInputDTO) -> Manager:
-        existing = await self.repository.exists_by_name(manager.manager_name)
-        if existing:
-            raise ValueError("O técnico já existe")
+        if await self.repository.exists_by_name(manager.manager_name):
+            raise BusinessException("Já existe um técnico com esse nome")
 
         manager_entity = Manager(
             manager_name=manager.manager_name,
@@ -28,7 +31,7 @@ class ManagerUseCase:
     async def update_manager(self, manager_id: int, manager: ManagerUpdateDTO) -> Manager:
         existing = await self.repository.get_by_id(manager_id)
         if not existing:
-            raise ValueError("O técnico não existe")
+            raise BusinessException("Técnico não encontrado")
 
         manager_entity = Manager(
             manager_name=manager.manager_name if manager.manager_name is not None else existing.manager_name,
@@ -36,11 +39,9 @@ class ManagerUseCase:
             nacionality=manager.nacionality if manager.nacionality is not None else existing.nacionality,
             id=manager_id,
         )
-
         return await self.repository.update(manager_id, manager_entity)
 
     async def delete_manager(self, manager_id: int) -> None:
-        existing = await self.repository.get_by_id(manager_id)
-        if not existing:
-            raise ValueError("O técnico não existe")
+        if not await self.repository.get_by_id(manager_id):
+            raise BusinessException("Técnico não encontrado")
         await self.repository.delete(manager_id)

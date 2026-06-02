@@ -1,4 +1,5 @@
 from domain.entities.title_type import TitleType
+from domain.exceptions.business_exception import BusinessException
 from domain.ports.title_type_repository_port import TitleTypeRepositoryPort
 from .dtos.title_type_dto import CreateTitleTypeDTO, UpdateTitleTypeDTO
 
@@ -13,7 +14,7 @@ class TitleTypeUseCase:
     async def get_title_type(self, title_type_id: int) -> TitleType:
         existing = await self.repository.get_by_id(title_type_id)
         if not existing:
-            raise ValueError("Tipo de título não encontrado")
+            raise BusinessException("Tipo de título não encontrado")
         return existing
 
     async def create_title_type(self, dto: CreateTitleTypeDTO) -> TitleType:
@@ -23,7 +24,7 @@ class TitleTypeUseCase:
     async def update_title_type(self, title_type_id: int, dto: UpdateTitleTypeDTO) -> TitleType:
         existing = await self.repository.get_by_id(title_type_id)
         if not existing:
-            raise ValueError("Tipo de título não encontrado")
+            raise BusinessException("Tipo de título não encontrado")
 
         title_type = TitleType(
             description=dto.description if dto.description is not None else existing.description,
@@ -32,7 +33,6 @@ class TitleTypeUseCase:
         return await self.repository.update(title_type_id, title_type)
 
     async def delete_title_type(self, title_type_id: int) -> None:
-        existing = await self.repository.get_by_id(title_type_id)
-        if not existing:
-            raise ValueError("Tipo de título não encontrado")
+        if not await self.repository.get_by_id(title_type_id):
+            raise BusinessException("Tipo de título não encontrado")
         await self.repository.delete(title_type_id)

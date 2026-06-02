@@ -30,14 +30,14 @@ class TeamRepository(TeamRepositoryPort):
     async def create(self, team: Team) -> Team:
         row = await self.conn.fetchrow(
             "INSERT INTO times (nome_time, estado, fundacao, tecnico_id, estadio_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            team.team_name, team.state, team.creation, team.manager_id, team.stadium_id
+            team.team_name, team.state, team.creation, team.manager_id, team.stadium_id,
         )
         return _map(row)
 
     async def update(self, team_id: int, team: Team) -> Team | None:
         row = await self.conn.fetchrow(
             "UPDATE times SET nome_time=$1, estado=$2, fundacao=$3, tecnico_id=$4, estadio_id=$5 WHERE id=$6 RETURNING *",
-            team.team_name, team.state, team.creation, team.manager_id, team.stadium_id, team_id
+            team.team_name, team.state, team.creation, team.manager_id, team.stadium_id, team_id,
         )
         return _map(row) if row else None
 
@@ -46,7 +46,9 @@ class TeamRepository(TeamRepositoryPort):
         return result == "DELETE 1"
 
     async def exists_by_name(self, team_name: str) -> bool:
-        row = await self.conn.fetchrow(
-            "SELECT 1 FROM times WHERE nome_time = $1", team_name
-        )
+        row = await self.conn.fetchrow("SELECT 1 FROM times WHERE nome_time = $1", team_name)
+        return row is not None
+
+    async def exists_by_manager(self, manager_id: int) -> bool:
+        row = await self.conn.fetchrow("SELECT 1 FROM times WHERE tecnico_id = $1", manager_id)
         return row is not None
