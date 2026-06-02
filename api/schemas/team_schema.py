@@ -4,7 +4,7 @@ from datetime import date
 class TeamSchema(BaseModel):
     team_name: str
     state: str
-    creation: date
+    creation: int
     manager_id: int
     stadium_id: int
 

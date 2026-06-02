@@ -1,6 +1,7 @@
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from api.commons.api_response import ApiResponse
 from api.schemas.player_schema import PlayerSchema
 from business.dtos.player_dto import CreatePlayerDTO, UpdatePlayerDTO
 from business.player_use_case import PlayerUseCase
@@ -14,38 +15,30 @@ def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> Playe
     return PlayerUseCase(PlayerRepository(conn))
 
 
-@router.get("/", response_model=list[PlayerSchema])
+@router.get("/", response_model=ApiResponse[list[PlayerSchema]])
 async def get_players(usecase: PlayerUseCase = Depends(get_use_case)):
-    return await usecase.get_all_players()
+    data = await usecase.get_all_players()
+    return ApiResponse.success_response(data=data)
 
 
-@router.post("/", response_model=PlayerSchema, status_code=201)
+@router.post("/", response_model=ApiResponse[PlayerSchema], status_code=201)
 async def create_player(dto: CreatePlayerDTO, usecase: PlayerUseCase = Depends(get_use_case)):
-    try:
-        return await usecase.create_player(dto)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.create_player(dto)
+    return ApiResponse.success_response(data=data)
 
 
-@router.get("/{player_id}", response_model=PlayerSchema)
+@router.get("/{player_id}", response_model=ApiResponse[PlayerSchema])
 async def get_player(player_id: int, usecase: PlayerUseCase = Depends(get_use_case)):
-    try:
-        return await usecase.get_player(player_id)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    data = await usecase.get_player(player_id)
+    return ApiResponse.success_response(data=data)
 
 
-@router.patch("/{player_id}", response_model=PlayerSchema)
+@router.patch("/{player_id}", response_model=ApiResponse[PlayerSchema])
 async def update_player(player_id: int, dto: UpdatePlayerDTO, usecase: PlayerUseCase = Depends(get_use_case)):
-    try:
-        return await usecase.update_player(player_id, dto)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.update_player(player_id, dto)
+    return ApiResponse.success_response(data=data)
 
 
 @router.delete("/{player_id}", status_code=204)
 async def delete_player(player_id: int, usecase: PlayerUseCase = Depends(get_use_case)):
-    try:
-        await usecase.delete_player(player_id)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    await usecase.delete_player(player_id)

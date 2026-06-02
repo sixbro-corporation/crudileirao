@@ -1,6 +1,7 @@
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from api.commons.api_response import ApiResponse
 from api.schemas.team_schema import TeamSchema
 from business.dtos.team_dto import CreateTeamDTO, UpdateTeamDTO
 from business.team_use_case import TeamUseCase
@@ -14,50 +15,37 @@ def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> TeamU
     return TeamUseCase(TeamRepository(conn))
 
 
-@router.get("/", response_model=list[TeamSchema])
+@router.get("/", response_model=ApiResponse[list[TeamSchema]])
 async def get_teams(usecase: TeamUseCase = Depends(get_use_case)):
-    teams = await usecase.get_all_teams()
-    return teams
+    data = await usecase.get_all_teams()
+    return ApiResponse.success_response(data=data)
 
 
-@router.post("/", response_model=TeamSchema, status_code=201)
+@router.post("/", response_model=ApiResponse[TeamSchema], status_code=201)
 async def create_team(dto: CreateTeamDTO, usecase: TeamUseCase = Depends(get_use_case)):
-    try:
-        team = await usecase.create_team(dto)
-        return team
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.create_team(dto)
+    return ApiResponse.success_response(data=data)
 
 
-@router.get("/{team_id}", response_model=TeamSchema)
+@router.get("/{team_id}", response_model=ApiResponse[TeamSchema])
 async def get_team(team_id: int, usecase: TeamUseCase = Depends(get_use_case)):
-    try:
-        team = await usecase.get_team(team_id)
-        return team
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    data = await usecase.get_team(team_id)
+    return ApiResponse.success_response(data=data)
 
 
-@router.patch("/{team_id}", response_model=TeamSchema)
+@router.patch("/{team_id}", response_model=ApiResponse[TeamSchema])
 async def update_team(team_id: int, dto: UpdateTeamDTO, usecase: TeamUseCase = Depends(get_use_case)):
-    try:
-        team = await usecase.update_team(
-            team_id=team_id,
-            team_name=dto.team_name,
-            state=dto.state,
-            creation=dto.creation,
-            manager_id=dto.manager_id,
-            stadium_id=dto.estadio_id,
-        )
-        return team
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.update_team(
+        team_id=team_id,
+        team_name=dto.team_name,
+        state=dto.state,
+        creation=dto.creation,
+        manager_id=dto.manager_id,
+        stadium_id=dto.estadio_id,
+    )
+    return ApiResponse.success_response(data=data)
 
 
 @router.delete("/{team_id}", status_code=204)
 async def delete_team(team_id: int, usecase: TeamUseCase = Depends(get_use_case)):
-    try:
-        await usecase.delete_team(team_id)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
+    await usecase.delete_team(team_id)

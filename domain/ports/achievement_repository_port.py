@@ -25,5 +25,5 @@ class AchievementRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    async def exists_by_team_and_championship(self, team_id: int, championship_id: int) -> bool:
+    async def exists_by_team_and_edition(self, team_id: int, edition_id: int) -> bool:
         pass

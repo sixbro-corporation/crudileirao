@@ -9,7 +9,7 @@ T = TypeVar("T")
 class ApiResponse(BaseModel, Generic[T]):
     model_config = ConfigDict(ignored_types=(classmethod, staticmethod))
 
-    success_bool: bool = Field(
+    success: bool = Field(
         default=True, description="Indica se a operação foi bem-sucedida"
     )
 
@@ -22,19 +22,18 @@ class ApiResponse(BaseModel, Generic[T]):
     code: Optional[str] = Field(default=None, description="Código de erro")
 
     timestamp: datetime = Field(
-        default_factory=datetime.now,  # ← CORRETO: função sem ()
+        default_factory=datetime.now,
         description="Timestamp da resposta",
     )
 
     @classmethod
-    def success(
+    def success_response(
         cls, data: Optional[T] = None, message: Optional[str] = None
     ) -> "ApiResponse[T]":
         return cls(
             success=True,
             data=data,
             message=message,
-            timestamp=datetime.now().isoformat(),
         )
 
     @classmethod
@@ -46,5 +45,4 @@ class ApiResponse(BaseModel, Generic[T]):
             error=error,
             code=code,
             data=data,
-            # ❌ NÃO passe timestamp
         )

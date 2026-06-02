@@ -14,7 +14,8 @@ def register_exception_handler(app: FastAPI) -> None:
         response = ApiResponse.failure(error=str(exc), code="BUSINESS_ERROR")
 
         return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content=response.model_dump()
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=response.model_dump(mode="json"),
         )
 
     @app.exception_handler(RequestValidationError)
@@ -27,14 +28,12 @@ def register_exception_handler(app: FastAPI) -> None:
             errors[field] = error["msg"]
 
         response = ApiResponse.failure(
-            error="Validation failed", code="VALIDATION_ERROR"
+            error="Validation failed", code="VALIDATION_ERROR", data=errors
         )
-
-        response.data = errors
 
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=response.model_dump(),
+            content=response.model_dump(mode="json"),
         )
 
     @app.exception_handler(ValueError)
@@ -42,7 +41,8 @@ def register_exception_handler(app: FastAPI) -> None:
         response = ApiResponse.failure(error=str(exc), code="INVALID_VALUE")
 
         return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content=response.model_dump()
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=response.model_dump(mode="json"),
         )
 
     @app.exception_handler(Exception)
@@ -55,5 +55,5 @@ def register_exception_handler(app: FastAPI) -> None:
 
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=response.model_dump(),
+            content=response.model_dump(mode="json"),
         )

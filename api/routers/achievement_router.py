@@ -1,6 +1,7 @@
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from api.commons.api_response import ApiResponse
 from api.schemas.achievement_schema import AchievementSchema
 from business.achievement_use_case import AchievementUseCase
 from business.dtos.achievement_dto import CreateAchievementDTO, UpdateAchievementDTO
@@ -14,42 +15,30 @@ def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> Achie
     return AchievementUseCase(AchievementRepository(conn))
 
 
-@router.get("/", response_model=list[AchievementSchema])
+@router.get("/", response_model=ApiResponse[list[AchievementSchema]])
 async def get_achievements(usecase: AchievementUseCase = Depends(get_use_case)):
-    achievements = await usecase.get_all_achievements()
-    return achievements
+    data = await usecase.get_all_achievements()
+    return ApiResponse.success_response(data=data)
 
 
-@router.post("/", response_model=AchievementSchema, status_code=201)
+@router.post("/", response_model=ApiResponse[AchievementSchema], status_code=201)
 async def create_achievement(dto: CreateAchievementDTO, usecase: AchievementUseCase = Depends(get_use_case)):
-    try:
-        achievement = await usecase.create(dto)
-        return achievement
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.create(dto)
+    return ApiResponse.success_response(data=data)
 
 
-@router.get("/{achievement_id}", response_model=AchievementSchema)
+@router.get("/{achievement_id}", response_model=ApiResponse[AchievementSchema])
 async def get_achievement(achievement_id: int, usecase: AchievementUseCase = Depends(get_use_case)):
-    try:
-        achievement = await usecase.get_achievement(achievement_id)
-        return achievement
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    data = await usecase.get_achievement(achievement_id)
+    return ApiResponse.success_response(data=data)
 
 
-@router.patch("/{achievement_id}", response_model=AchievementSchema)
+@router.patch("/{achievement_id}", response_model=ApiResponse[AchievementSchema])
 async def update_achievement(achievement_id: int, dto: UpdateAchievementDTO, usecase: AchievementUseCase = Depends(get_use_case)):
-    try:
-        achievement = await usecase.update_achievement(achievement_id, dto)
-        return achievement
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.update_achievement(achievement_id, dto)
+    return ApiResponse.success_response(data=data)
 
 
 @router.delete("/{achievement_id}", status_code=204)
 async def delete_achievement(achievement_id: int, usecase: AchievementUseCase = Depends(get_use_case)):
-    try:
-        await usecase.delete(achievement_id)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    await usecase.delete(achievement_id)

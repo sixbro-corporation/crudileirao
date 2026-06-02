@@ -5,7 +5,7 @@ from datetime import date
 class Team:
     team_name: str
     state: str
-    creation: date
+    creation: int
     manager_id: int
     stadium_id: int
     id: int | None = None

@@ -1,6 +1,7 @@
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
+from api.commons.api_response import ApiResponse
 from api.schemas.manager_schema import ManagerSchema
 from business.dtos.manager_dto import ManagerInputDTO, ManagerUpdateDTO
 from business.manager_use_case import ManagerUseCase
@@ -14,42 +15,30 @@ def get_use_case(conn: asyncpg.Connection = Depends(get_db_connection)) -> Manag
     return ManagerUseCase(ManagerRepository(conn))
 
 
-@router.get("/", response_model=list[ManagerSchema])
+@router.get("/", response_model=ApiResponse[list[ManagerSchema]])
 async def get_managers(usecase: ManagerUseCase = Depends(get_use_case)):
-    managers = await usecase.get_all_managers()
-    return managers
+    data = await usecase.get_all_managers()
+    return ApiResponse.success_response(data=data)
 
 
-@router.post("/", response_model=ManagerSchema, status_code=201)
+@router.post("/", response_model=ApiResponse[ManagerSchema], status_code=201)
 async def create_manager(dto: ManagerInputDTO, usecase: ManagerUseCase = Depends(get_use_case)):
-    try:
-        manager = await usecase.create_manager(dto)
-        return manager
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.create_manager(dto)
+    return ApiResponse.success_response(data=data)
 
 
-@router.get("/{manager_id}", response_model=ManagerSchema)
+@router.get("/{manager_id}", response_model=ApiResponse[ManagerSchema])
 async def get_manager(manager_id: int, usecase: ManagerUseCase = Depends(get_use_case)):
-    try:
-        manager = await usecase.get_manager(manager_id)
-        return manager
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    data = await usecase.get_manager(manager_id)
+    return ApiResponse.success_response(data=data)
 
 
-@router.patch("/{manager_id}", response_model=ManagerSchema)
+@router.patch("/{manager_id}", response_model=ApiResponse[ManagerSchema])
 async def update_manager(manager_id: int, dto: ManagerUpdateDTO, usecase: ManagerUseCase = Depends(get_use_case)):
-    try:
-        manager = await usecase.update_manager(manager_id, dto)
-        return manager
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    data = await usecase.update_manager(manager_id, dto)
+    return ApiResponse.success_response(data=data)
 
 
 @router.delete("/{manager_id}", status_code=204)
 async def delete_manager(manager_id: int, usecase: ManagerUseCase = Depends(get_use_case)):
-    try:
-        await usecase.delete_manager(manager_id)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    await usecase.delete_manager(manager_id)

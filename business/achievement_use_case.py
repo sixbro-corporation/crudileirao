@@ -8,15 +8,21 @@ class AchievementUseCase:
         self.repository = repository
 
     async def create(self, dto: CreateAchievementDTO) -> Achievement:
-        existing = await self.repository.exists_by_team_and_championship(dto.team_id, dto.championship_id)
+        existing = await self.repository.exists_by_team_and_edition(dto.team_id, dto.edition_id)
         if existing:
             raise ValueError("Essa conquista já existe")
 
-        achievement = Achievement(team_id=dto.team_id, championship_id=dto.championship_id)
+        achievement = Achievement(id=None, team_id=dto.team_id, edition_id=dto.edition_id)
         return await self.repository.create(achievement)
 
     async def get_all_achievements(self) -> list[Achievement]:
         return await self.repository.get_all()
+
+    async def get_achievement(self, achievement_id: int) -> Achievement:
+        existing = await self.repository.get_by_id(achievement_id)
+        if not existing:
+            raise ValueError("A conquista solicitada não existe")
+        return existing
 
     async def update_achievement(self, achievement_id: int, dto: UpdateAchievementDTO) -> Achievement:
         existing = await self.repository.get_by_id(achievement_id)
@@ -24,14 +30,11 @@ class AchievementUseCase:
             raise ValueError("A conquista solicitada não existe")
 
         achievement = Achievement(
-            team_id=dto.team_id if dto.team_id is not None else existing.team_id,
-            championship_id=dto.championship_id if dto.championship_id is not None else existing.championship_id,
             id=achievement_id,
+            team_id=dto.team_id if dto.team_id is not None else existing.team_id,
+            edition_id=dto.edition_id if dto.edition_id is not None else existing.edition_id,
         )
-        return await self.repository.update(achievement, achievement_id)
-
-    async def get_achievement(self, achievement_id: int) -> Achievement:
-        return await self.repository.get_by_id(achievement_id)
+        return await self.repository.update(achievement_id, achievement)
 
     async def delete(self, achievement_id: int) -> None:
         existing = await self.repository.get_by_id(achievement_id)
